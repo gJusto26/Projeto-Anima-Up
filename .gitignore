@@ -1,0 +1,17 @@
+# Cache do Python (arquivos compilados automaticamente)
+__pycache__/
+*.pyc
+*.pyo
+
+# Ambientes virtuais (caso crie no futuro)
+.venv/
+venv/
+env/
+
+# Imagens de teste geradas localmente
+character_teste.png
+
+# Arquivos de sistema
+Thumbs.db
+.DS_Store
+
