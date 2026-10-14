@@ -5,7 +5,7 @@ from pathlib import Path
 # Garante que a raiz do projeto esteja no caminho de busca de módulos
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from customizer import Customizer, Character
+from customizer import Customizer, Character, load_catalog_from_assets
 
 # Catálogo mockado para garantir um ambiente controlado de testes:
 MOCK_CATALOG = {
@@ -14,12 +14,12 @@ MOCK_CATALOG = {
         "cabeca_F_01.png",
         "cabeca_U_01.png"
     ],
-    "torso": [
+    "upper": [
         "tronco_M_01.png",
         "tronco_F_01.png",
         "tronco_U_01.png"
     ],
-    "leg": [
+    "lower": [
         "perna_M_01.png",
         "perna_F_01.png",
         "perna_U_01.png"
@@ -35,8 +35,8 @@ def test_generate_random_without_gender():
     assert isinstance(character, Character)
     assert character.gender is None
     assert "head" in character.parts
-    assert "torso" in character.parts
-    assert "leg" in character.parts
+    assert "upper" in character.parts
+    assert "lower" in character.parts
 
 
 def test_generate_random_male_does_not_contain_female_assets():
@@ -71,7 +71,7 @@ def test_invalid_gender_raises_value_error():
 
 def test_empty_category_raises_value_error():
     """Garante que um catálogo incompleto/vazio lance erro informando o problema."""
-    empty_catalog = {"head": [], "torso": ["tronco_01.png"]}
+    empty_catalog = {"head": [], "upper": ["tronco_01.png"]}
     motor = Customizer(empty_catalog)
     try:
         motor.generate_random()
@@ -80,10 +80,22 @@ def test_empty_category_raises_value_error():
         pass  # Comportamento esperado!
 
 
+def test_load_catalog_from_assets():
+    """Garante que a descoberta automática carrega as categorias reais com sucesso."""
+    catalog = load_catalog_from_assets()
+    assert "head" in catalog
+    assert "upper" in catalog
+    assert "lower" in catalog
+    assert len(catalog["head"]) >= 6
+    assert len(catalog["upper"]) >= 6
+    assert len(catalog["lower"]) >= 6
+
+
 if __name__ == "__main__":
     test_generate_random_without_gender()
     test_generate_random_male_does_not_contain_female_assets()
     test_generate_random_female_does_not_contain_male_assets()
     test_invalid_gender_raises_value_error()
     test_empty_category_raises_value_error()
-    print("[OK] Todos os 5 testes passaram com sucesso!")
+    test_load_catalog_from_assets()
+    print("[OK] Todos os 6 testes do customizer passaram com sucesso!")

@@ -1,8 +1,8 @@
 """Módulo de renderização gráfica de personagens com Pillow.
 Carrega os assets visuais do disco e sobrepõe as camadas na ordem definida:
 1. 'head' (cabeça) - camada do fundo
-2. 'torso' (tronco com braços) - camada intermediária
-3. 'leg' (pernas/calçados) - camada frontal
+2. 'upper' (tronco com braços) - camada intermediária
+3. 'lower' (cintura para baixo) - camada frontal
 """
 from __future__ import annotations
 
@@ -10,25 +10,28 @@ from pathlib import Path
 
 from PIL import Image
 
-from .customizer import Character
+try:
+    from .customizer import Character
+except ImportError:
+    from customizer import Character
 
 class CharacterRenderer:
     """Responsável por carregar e sobrepor as partes visuais de um Character."""
 
-    LAYER_ORDER = ("head", "torso", "leg")
+    LAYER_ORDER = ("head", "upper", "lower")
 
     def __init__(self, assets_dir: str | Path = "assets") -> None:
         """Inicializa o renderizador apontando para a pasta raiz dos assets.
             Args:
-            assets_dir: Caminho base onde estão as subpastas 'head', 'torso' e 'leg'.
+            assets_dir: Caminho base onde estão as subpastas 'head', 'upper' e 'lower'.
         """
         self.assets_dir = Path(assets_dir)
 
     def get_part_path(self, category: str, filename: str) -> Path:
         """Retorna o caminho completo de um asset no disco.
         Args:
-            category: Nome da categoria ('head', 'torso' ou 'leg').
-            filename: Nome do arquivo (ex: 'head_M_01.png').
+            category: Nome da categoria ('head', 'upper' ou 'lower').
+            filename: Nome do arquivo (ex: 'head_alien.png').
         Returns:
         Path apontando para o arquivo no sistema de arquivos."""
         return self.assets_dir / category / filename
@@ -76,7 +79,7 @@ class CharacterRenderer:
         return dest
 
 if __name__ == "__main__":
-    from customizer.customizer import Customizer, parts_catalog
+    from customizer import Customizer, parts_catalog
     motor = Customizer(parts_catalog)
     personagem = motor.generate_random()
     renderer = CharacterRenderer("assets")

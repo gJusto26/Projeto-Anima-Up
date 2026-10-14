@@ -2,8 +2,8 @@
 Responsável pela montagem e sorteio de peças visuais dos personagens a partir
 de um catálogo de assets segmentados em 3 partes principais:
 - 'head' (cabeça)
-- 'torso' (tronco com braços integrados)
-- 'legs' (cintura para baixo em asset único)
+- 'upper' (tronco com braços integrados)
+- 'lower' (cintura para baixo em asset único)
 Permite sorteio 100% livre (sem gênero) ou opcionalmente filtrado por tags
 de gênero presentes no nome do arquivo (_M_, _F_, _U_).
 """
@@ -11,11 +11,13 @@ from __future__ import annotations
 
 import random
 
+from pathlib import Path
+
 class Character:
     """Representa a composição final de um personagem customizado.
     Attributes:
         parts (dict[str, str]): Mapeamento da categoria para o nome do arquivo
-            (ex: {'head': 'cabeca_01.png', 'torso': 'tronco_01.png'})
+            (ex: {'head': 'head_alien.png', 'upper': 'upper_alien.png', 'lower': 'lower_alien.png'})
         gender (str | None): Gênero aplicado na geração ('M', 'F', 'U' ou None se for livre).
     """
 
@@ -97,44 +99,36 @@ class Customizer:
         return Character(selected_parts, gender=gender)
 
 
-heads = [
-    "head_M_01.png",
-    "head_M_02.png",
-    "head_F_01.png",
-    "head_F_02.png",
-    "head_U_01.png",
-]
+def load_catalog_from_assets(assets_dir: str | Path = "assets") -> dict[str, list[str]]:
+    """Varre automaticamente as subpastas de assets e monta o catálogo de peças.
 
-torsos = [
-    "torso_M_01.png",
-    "torso_M_02.png",
-    "torso_F_01.png",
-    "torso_F_02.png",
-    "torso_U_01.png"
-]
+    Args:
+        assets_dir: Caminho base onde estão as pastas 'head', 'upper' e 'lower'.
 
-legs = [
-    "leg_M_01.png",
-    "leg_M_02.png",
-    "leg_F_01.png",
-    "leg_F_02.png",
-    "leg_U_01.png"
-]
+    Returns:
+        Dicionário com as categorias e suas respectivas listas de arquivos PNG encontrados.
+    """
+    base = Path(assets_dir)
+    if not base.is_absolute() and not base.exists():
+        project_root = Path(__file__).resolve().parent.parent
+        candidate = project_root / assets_dir
+        if candidate.exists():
+            base = candidate
 
-parts_catalog = {
-    "head": heads,
-    "torso": torsos,
-    "leg": legs
-}
+    return {
+        "head": sorted([f.name for f in (base / "head").glob("*.png")]),
+        "upper": sorted([f.name for f in (base / "upper").glob("*.png")]),
+        "lower": sorted([f.name for f in (base / "lower").glob("*.png")]),
+    }
+
+
+parts_catalog = load_catalog_from_assets()
 
 
 if __name__ == "__main__":
     motor = Customizer(parts_catalog)
 
-    #Modo sem gênero
+    print("\n--- TESTE DO CUSTOMIZADOR COM ASSETS REAIS ---")
     p_livre = motor.generate_random()
-    print(f"Sem genero: {p_livre}")
+    print(f"Personagem sorteado: {p_livre}")
 
-    #Modo com gênero
-    p_masculino = motor.generate_random(gender="M")
-    print(f"Masculino: {p_masculino}")
