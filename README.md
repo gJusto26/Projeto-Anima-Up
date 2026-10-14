@@ -49,8 +49,9 @@ pip install -r requirements.txt
 ### 2. Gerar e Renderizar um Personagem
 Para sortear peças automaticamente a partir das pastas de `assets/` e gerar uma imagem final (`character_teste.png`):
 ```bash
-python -m customizer.renderer
+python main.py
 ```
+*(Ou diretamente pelo módulo: `python -m customizer.renderer`)*
 
 ### 3. Executar Testes Automatizados
 Para rodar toda a suíte de testes unitários:

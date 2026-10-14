@@ -79,7 +79,10 @@ class CharacterRenderer:
         return dest
 
 if __name__ == "__main__":
-    from customizer import Customizer, parts_catalog
+    try:
+        from .customizer import Customizer, parts_catalog
+    except ImportError:
+        from customizer.customizer import Customizer, parts_catalog
     motor = Customizer(parts_catalog)
     personagem = motor.generate_random()
     renderer = CharacterRenderer("assets")
