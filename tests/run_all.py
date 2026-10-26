@@ -10,6 +10,7 @@ def main():
     test_files = [
         PROJECT_ROOT / "tests" / "test_customizer.py",
         PROJECT_ROOT / "tests" / "test_renderer.py",
+        PROJECT_ROOT / "tests" / "test_import_assets.py",
     ]
 
     for test_file in test_files:
@@ -26,3 +27,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -14,20 +14,49 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ASSETS_DIR = PROJECT_ROOT / "assets"
 
 
-def remove_chroma_key(image: Image.Image) -> Image.Image:
-    """Remove o fundo verde (Chroma Key) e suas bordas, tornando-os transparentes."""
+def remove_chroma_key(
+    image: Image.Image,
+    t_low: int = 10,
+    t_high: int = 35,
+) -> Image.Image:
+    """Remove o fundo verde (Chroma Key) e o vazamento de verde (Despill) nas bordas.
+
+    Utiliza o método de diferença linear de cores com supressão de spill:
+    1. diff = G - max(R, B): mede o quanto o canal verde domina a cor do pixel.
+    2. diff >= t_high: fundo verde puro/dominante -> 100% transparente (Alpha = 0).
+    3. t_low < diff < t_high: transição suave na borda -> ajusta Alpha proporcional e neutraliza o verde.
+    4. diff > 0: borda ou contorno -> aplica Despill (limita G a max(R, B)), eliminando qualquer halo verde.
+
+    Args:
+        image: Imagem original do Pillow.
+        t_low: Limite inferior da dominância do verde para início da suavização.
+        t_high: Limite superior onde o verde é considerado 100% fundo.
+
+    Returns:
+        Image.Image convertida em RGBA com fundo transparente e bordas limpas sem verde.
+    """
     image = image.convert("RGBA")
     raw = bytearray(image.tobytes())
 
     # Percorre os pixels em blocos de 4 bytes (R, G, B, A)
     for i in range(0, len(raw), 4):
-        r, g, b = raw[i], raw[i + 1], raw[i + 2]
+        r, g, b, a = raw[i], raw[i + 1], raw[i + 2], raw[i + 3]
+        if a == 0:
+            continue
 
-        # Condição de verde Chroma Key (verde dominante sobre vermelho e azul)
-        if g > 150 and g > r * 1.4 and g > b * 1.4:
-            raw[i + 3] = 0  # Zera a opacidade (100% transparente)
-        elif g > 200 and r < 80 and b < 80:
-            raw[i + 3] = 0
+        max_rb = r if r > b else b
+        diff = g - max_rb
+
+        if diff >= t_high:
+            raw[i + 3] = 0  # 100% transparente
+        elif diff > t_low:
+            # Transição suave para evitar serrilhado
+            factor = (t_high - diff) / (t_high - t_low)
+            raw[i + 3] = int(a * factor)
+            raw[i + 1] = max_rb  # Despill (remove a contaminação verde)
+        elif diff > 0:
+            # Despill para qualquer tom residual de verde nas bordas
+            raw[i + 1] = max_rb
 
     return Image.frombytes("RGBA", image.size, bytes(raw))
 

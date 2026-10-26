@@ -11,8 +11,8 @@ from customizer import Character, CharacterRenderer
 
 
 def test_layer_order():
-    """Garante que a ordem de camadas respeite head -> upper -> lower."""
-    assert CharacterRenderer.LAYER_ORDER == ("head", "upper", "lower")
+    """Garante que a ordem de camadas respeite lower -> upper -> head."""
+    assert CharacterRenderer.LAYER_ORDER == ("lower", "upper", "head")
 
 
 def test_render_with_mock_images():
@@ -82,3 +82,4 @@ if __name__ == "__main__":
     test_render_missing_asset_raises_filenotfound()
     test_render_empty_character_raises_value_error()
     print("[OK] Todos os testes do renderer passaram com sucesso!")
+

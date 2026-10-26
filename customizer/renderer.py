@@ -1,8 +1,8 @@
 """Módulo de renderização gráfica de personagens com Pillow.
 Carrega os assets visuais do disco e sobrepõe as camadas na ordem definida:
-1. 'head' (cabeça) - camada do fundo
+1. 'lower' (cintura para baixo) - camada do fundo
 2. 'upper' (tronco com braços) - camada intermediária
-3. 'lower' (cintura para baixo) - camada frontal
+3. 'head' (cabeça) - camada superior/frontal
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ except ImportError:
 class CharacterRenderer:
     """Responsável por carregar e sobrepor as partes visuais de um Character."""
 
-    LAYER_ORDER = ("head", "upper", "lower")
+    LAYER_ORDER = ("lower", "upper", "head")
 
     def __init__(self, assets_dir: str | Path = "assets") -> None:
         """Inicializa o renderizador apontando para a pasta raiz dos assets.

@@ -33,9 +33,9 @@ Projeto Anima Up/
 ## 🎨 Ordem de Camadas (Layer Ordering)
 
 O renderizador sobrepõe as peças utilizando composição Alpha RGBA na seguinte ordem estrita:
-1. **`head`** (Cabeça / Elmos / Cabelos) — Camada base (fundo)
+1. **`lower`** (Cintura para baixo em peça única) — Camada base (fundo)
 2. **`upper`** (Tronco com braços integrados) — Camada intermediária
-3. **`lower`** (Cintura para baixo em peça única) — Camada superior (frontal)
+3. **`head`** (Cabeça / Elmos / Cabelos) — Camada superior (frontal)
 
 ---
 
