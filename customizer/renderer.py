@@ -78,6 +78,34 @@ class CharacterRenderer:
         image.save(dest, format="PNG")
         return dest
 
+    def render_cv2(self, character: Character):
+        """Renderiza o personagem diretamente como matriz NumPy no formato BGRA do OpenCV.
+
+        Permite sobrepor o personagem na tela do totem em tempo real (cv2.imshow)
+        direto na memória RAM, sem precisar salvar e reler arquivo do disco.
+
+        Args:
+            character: Instância de Character contendo as partes selecionadas.
+
+        Returns:
+            numpy.ndarray no formato BGRA (4 canais com transparência).
+
+        Raises:
+            ImportError: Se opencv-python ou numpy não estiverem instalados no ambiente.
+        """
+        try:
+            import cv2
+            import numpy as np
+        except ImportError as exc:
+            raise ImportError(
+                "As bibliotecas 'opencv-python' e 'numpy' são necessárias para usar render_cv2(). "
+                "Instale-as com: pip install opencv-python numpy"
+            ) from exc
+
+        pil_image = self.render(character)
+        rgba_array = np.array(pil_image)
+        return cv2.cvtColor(rgba_array, cv2.COLOR_RGBA2BGRA)
+
 if __name__ == "__main__":
     try:
         from .customizer import Customizer, parts_catalog

@@ -76,10 +76,30 @@ def test_render_empty_character_raises_value_error():
         pass
 
 
+def test_render_cv2_defense():
+    """Garante que render_cv2 lança ImportError claro se dependências não estiverem instaladas."""
+    renderer = CharacterRenderer()
+    character = Character({"head": "qualquer.png"})
+    try:
+        import cv2
+        import numpy as np
+        has_deps = True
+    except ImportError:
+        has_deps = False
+
+    if not has_deps:
+        try:
+            renderer.render_cv2(character)
+            assert False, "Deveria ter lançado ImportError para falta de cv2/numpy!"
+        except ImportError as e:
+            assert "opencv-python" in str(e)
+
+
 if __name__ == "__main__":
     test_layer_order()
     test_render_with_mock_images()
     test_render_missing_asset_raises_filenotfound()
     test_render_empty_character_raises_value_error()
+    test_render_cv2_defense()
     print("[OK] Todos os testes do renderer passaram com sucesso!")
 
